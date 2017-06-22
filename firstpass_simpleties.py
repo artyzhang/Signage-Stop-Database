@@ -1,7 +1,7 @@
 import pandas as pd
 import string
 
-Location1 = r'N:\ServicePlanning\Signage Update\Signage-Stop-Database-master\StopDatabase_RoutesOnly.xlsx'
+Location1 = r'N:\ServicePlanning\Signage Update\TestFolder\StopIDV26StopDatabase_forcleaning.xlsx'
 
 stops_df = pd.read_excel(Location1)
 
@@ -12,9 +12,10 @@ simpleroutes = ['1', '1AX','1BX','2', '3', '5R', '6', '7','7X', '8', '9R', '11',
 '83X', '88','J','K','L','NX','T']
 
 one_direction_simple_only = ['8AX', '8BX', '37', '45', '81X', 'N']
-one_direction_simple_direction = {'8AX': 'OB','8BX': 'OB', '37': 'OB', '45':'OB', 'N':'OB'}
+one_direction_simple_direction = {'8AX': 'OB','8BX': 'OB', '37': 'OB', '45':'OB', '81X':'IB', 'N':'OB',}
 
 owl_simple_only = ['44 owl', '48 owl', 'L owl', 'N owl']
+owl_simple_direction = {'44 owl': ['44IB1','44OB1'] ,'48 owl': ['48IB1','48OB1'], 'L owl': ['LOWLIB1','LOWLOB1'], 'N owl':['NOWLIB1','NOWLOB1']}
 
 # Note to self: remember format is "testdf.loc[1,'Line 1 Name']"
 # find and replace
@@ -30,12 +31,12 @@ def columnafternext(df, dfcolumn1):
 
 # Actually start doing stuff...
 
-Columnnumbers = ['Line 1 Name','Line 2 Name','Line 3 Name','Line 4 Name','Line 5 Name','Line 6 Name','Line 7 Name','Line 8 Name','Line 9 Name',
-'Line 10 Name','Line 11 Name','Line 12 Name','Line 13 Name']
+Columnnumbers = ['Line 1', 'Line 2', 'Line 3', 'Line 4','Line 5', 'Line 6', 'Line 7', 'Line 8', 'Line 9',
+'Line 10', 'Line 11', 'Line 12', 'Line 13']
 
 for k in Columnnumbers:
     co = stops_df.columns.get_loc(k) + 2
-    stops_df.insert(co, k[:-5] + ' Route' , stops_df[k].where(stops_df[k].isin(simpleroutes), None))
+    stops_df.insert(co, k + ' Route' , stops_df[k].where(stops_df[k].isin(simpleroutes), None))
 
 for j in Columnnumbers:
     for ln in range(len(stops_df)):
@@ -43,12 +44,20 @@ for j in Columnnumbers:
             stops_df.loc[ln, followingcolumn(stops_df,j)] = str(stops_df.loc[ln, followingcolumn(stops_df,j)]) + '1'
             stops_df.loc[ln, columnafternext(stops_df,j)] = str(stops_df.loc[ln,j]) + str(stops_df.loc[ln,followingcolumn(stops_df,j)])
 
-#for m in Columnnumbers:
-#    for mn in range(len(stops_df)):
-#        if str(stops_df.loc[mn,m]) in one_direction_simple_only:
-#            if stops_df.loc[mn, followingcolumn(stops_df,m)] == one_direction_simple_direction[stops_df.loc[mn,m]]
-#               stops_df.loc[mn, followingcolumn(stops_df,m)] = str(stops_df.loc[mn, followingcolumn(stops_df,m)]) + '1'
-#               stops_df.loc[mn, columnafternext(stops_df,m)] = str(stops_df.loc[mn,m]) + str(stops_df.loc[ln,followingcolumn(stops_df,m)])
+for m in Columnnumbers:
+    for mn in range(len(stops_df)):
+        if str(stops_df.loc[mn,m]) in one_direction_simple_only:
+            if stops_df.loc[mn, followingcolumn(stops_df,m)] == one_direction_simple_direction[stops_df.loc[mn,m]]:
+               stops_df.loc[mn, followingcolumn(stops_df,m)] = str(stops_df.loc[mn, followingcolumn(stops_df,m)]) + '1'
+               stops_df.loc[mn, columnafternext(stops_df,m)] = str(stops_df.loc[mn,m]) + str(stops_df.loc[ln,followingcolumn(stops_df,m)])
+
+for o in Columnnumbers:
+    for on in range(len(stops_df)):
+        if str(stops_df.loc[on, o]) in owl_simple_only:
+            if stops_df.loc[on,followingcolumn(stops_df,o)] == 'IB':
+                stops_df.loc[on, columnafternext(stops_df,o)] = owl_simple_direction[str(stops_df.loc[on, o])][0]
+            elif stops_df.loc[on,followingcolumn(stops_df,o)] == 'OB':
+                stops_df.loc[on, columnafternext(stops_df,o)] = owl_simple_direction[str(stops_df.loc[on, o])][1]
 
 Locationfinal = r'N:\ServicePlanning\Signage Update\TestFolder\StopDatabase_SimpleRoutesjoined.xlsx'
 stops_df.to_excel(Locationfinal, sheet_name = 'Sheet1', engine = 'xlsxwriter', index = False)
