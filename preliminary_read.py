@@ -3,6 +3,17 @@ import pandas as pd
 Location1 = r'N:\ServicePlanning\Signage Update\Signage-Stop-Database-master\StopIDV26_Trpz_merging.xlsx'
 stops_df = pd.read_excel(Location1)
 
+acceptablelines = ['1', '10' ,'12', '14','14R','14X','18','19','1AX','1BX',
+'2','21','22','23','24','25','27','28','28R','29',
+'3','30','30X','31','31AX','31BX','33','35','36','37','38','38AX','38BX','38R','39',
+'41','43','44','44 owl','45','47','48','48 owl','49',
+'5','5R','5 owl','52','54','55','56','57','59',
+'6','60','61','66','67',
+'7','76X','7X',
+'8','81X','82X','83X','88','8AX','8BX',
+'9','9R','90','91',
+'E','F','J','K','L','L owl','M','N','N owl','NX','T']
+
 def splitcomma(strin):
     return list(map(lambda x: x.strip(), strin.split(','))) if ',' in strin else [strin.strip()]
 
@@ -10,7 +21,10 @@ def splitdashIBOB(strin):
     if '-' in strin:
         twoitems = strin.split('-')
         if len(twoitems) == 2 and twoitems[1] == 'IB' or twoitems[1] == 'OB':
-            return twoitems
+            if twoitems[0] in acceptablelines:
+                return twoitems
+            else:
+                return [strin,'MERGE OR DELETE']
         else:
             return [strin,'FLAG']
     else:
