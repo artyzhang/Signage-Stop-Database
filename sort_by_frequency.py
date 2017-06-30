@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 Metro = ['J', 'K', 'L', 'M', 'N', 'T']
 Historic = ['E', 'F', 59]
@@ -27,10 +28,33 @@ def columnplus4(df, dfcolumn1):
 def columnplus5(df, dfcolumn1):
     return df.columns.values[df.columns.get_loc(dfcolumn1)+5]
 
+def sortbyrouteorder(list):
+    comparelist = []
+    for n in list:
+        if n in routeorder:
+            comparelist.append(routeorder.index(n))
+        elif np.isnan(n):
+            comparelist.append(len(routeorder)+1)
+        else:
+            comparelist.append(200)
+    return [x for (y,x) in sorted(zip(comparelist,list))]
+
+def createlineorder(list):
+    comparelist = []
+    for n in list:
+        if n in routeorder:
+            comparelist.append(routeorder.index(n))
+        elif np.isnan(n):
+            comparelist.append(len(routeorder)+1)
+        else:
+            comparelist.append(200)
+    return [x for (y,x) in sorted(zip(comparelist,list))]
+
+
 columnlinenames = ['Line 1 Name','Line 2 Name','Line 3 Name','Line 4 Name', 'Line 5 Name', 'Line 6 Name', 'Line 7 Name', 'Line 8 Name',
 'Line 9 Name', 'Line 10 Name', 'Line 11 Name', 'Line 12 Name', 'Line 13 Name']
 
-Location1 = r'C:\Temp_CS\Signage-Stop-Database\StopDatabase_RoutesOnly.xlsx'
+Location1 = r"N:\ServicePlanning\Signage Update\Signage-Stop-Database-master\StopDatabase_RoutesOnly.xlsx"
 stops_df = pd.read_excel(Location1)
 stops_dict = {}
 
@@ -39,6 +63,3 @@ for l in range(len(stops_df)):
     for m in columnlinenames:
         routelist.append(stops_df.loc[l,m])
     stops_dict[l] = routelist
-
-for l in range(5):
-    print(stops_dict[l])
