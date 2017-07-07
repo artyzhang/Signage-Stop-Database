@@ -36,6 +36,6 @@ stop_df.sort_index(inplace=True)
 
 swap_df = stop_df.swaplevel(0,2)
 
-for item in list(stop_df.index.get_level_values('Street ID')):
+for item in list(stop_df.index.get_level_values('Street ID'))[:2]:
     for i in columnlinenames:
-        stop_df.loc[item, i, 'Line Order'] = routeindex(stop_df.loc[item, i, 'Line Name'])
+        stop_df.loc[item, i, 'Line Order'] = routeindex(stop_df.loc[item, i, 'Line Name'][0])

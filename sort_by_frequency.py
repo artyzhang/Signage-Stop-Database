@@ -13,6 +13,12 @@ Special = ['NX', 'L owl', 'N owl', '5 owl', '44 owl', '48 owl', '1AX',
 
 routeorder = Metro + Historic + Rapid + Frequentlocal + Grid + Connector + Special
 
+def routeindex(n):
+    if n in routeorder:
+        return routeorder.index(n)
+    else:
+        return None
+
 def columnplus1(df, dfcolumn1):
     return df.columns.values[df.columns.get_loc(dfcolumn1)+1]
 
@@ -28,38 +34,52 @@ def columnplus4(df, dfcolumn1):
 def columnplus5(df, dfcolumn1):
     return df.columns.values[df.columns.get_loc(dfcolumn1)+5]
 
-def sortbyrouteorder(list):
-    comparelist = []
-    for n in list:
-        if n in routeorder:
-            comparelist.append(routeorder.index(n))
-        elif np.isnan(n):
-            comparelist.append(len(routeorder)+1)
-        else:
-            comparelist.append(200)
-    return [x for (y,x) in sorted(zip(comparelist,list))]
+def columnplus6(df, dfcolumn1):
+    return df.columns.values[df.columns.get_loc(dfcolumn1)+6]
 
-def createlineorder(list):
-    comparelist = []
-    for n in list:
-        if n in routeorder:
-            comparelist.append(routeorder.index(n))
-        elif np.isnan(n):
-            comparelist.append(len(routeorder)+1)
-        else:
-            comparelist.append(200)
-    return [x for (y,x) in sorted(zip(comparelist,list))]
+def tryint(v):
+    try:
+        return int(v)
+    except ValueError:
+        return v
 
 
-columnlinenames = ['Line 1 Name','Line 2 Name','Line 3 Name','Line 4 Name', 'Line 5 Name', 'Line 6 Name', 'Line 7 Name', 'Line 8 Name',
-'Line 9 Name', 'Line 10 Name', 'Line 11 Name', 'Line 12 Name', 'Line 13 Name']
+columnlinenames = columnlinenames = ['Line 1','Line 2','Line 3','Line 4', 'Line 5', 'Line 6', 'Line 7', 'Line 8', 'Line 9', 'Line 10', 'Line 11', 'Line 12', 'Line 13']
 
-Location1 = r"N:\ServicePlanning\Signage Update\Signage-Stop-Database-master\StopDatabase_RoutesOnly.xlsx"
+Location1 = r'N:\ServicePlanning\Signage Update\StopIDv26Database_merging.xlsx'
 stops_df = pd.read_excel(Location1)
-stops_dict = {}
 
-for l in range(len(stops_df)):
-    routelist = []
-    for m in columnlinenames:
-        routelist.append(stops_df.loc[l,m])
-    stops_dict[l] = routelist
+stops_df['Line Order'] = np.nan
+
+def sortbyroutelist(df, i, columnlist):
+    return [routeindex(tryint(x)) for x in [df.loc[i,j] for j in columnlist]]
+
+
+def stopdfplus(ind, dfc, num):
+    # This relies on the stops_df dataframe
+    if num == 1:
+        return stops_df.loc[ind,columnplus1(stops_df,dfc)]
+    elif num == 2:
+        return stops_df.loc[ind,columnplus2(stops_df,dfc)]
+    elif num == 3:
+        return stops_df.loc[ind,columnplus3(stops_df,dfc)]
+    elif num == 4:
+        return stops_df.loc[ind,columnplus4(stops_df,dfc)]
+    elif num == 5:
+        return stops_df.loc[ind,columnplus5(stops_df,dfc)]
+    elif num == 6:
+        return stops_df.loc[ind,columnplus6(stops_df,dfc)]
+
+def generateentry(num, columnlist):
+    # This relies on the stops_df dataframe
+    longlist = []
+    for b in columnlist:
+        longlist.append([stops_df.loc[num, b],stopdfplus(num,b,1),stopdfplus(num,b,2),stopdfplus(num,b,3),
+                     stopdfplus(num,b,4),stopdfplus(num,b,5),stopdfplus(num,b,6)])
+    return longlist
+
+def generateentrylist(i):
+    # This relies on the stops_df dataframe and the columnlinenames list
+    return [x for (y,x) in sorted(zip(sortbyroutelist(stops_df, i, columnlinenames),generateentry(i,columnlinenames)), key=lambda x: x[0] if x[0] else np.inf)]
+
+print(generateentrylist(7))
