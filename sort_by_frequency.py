@@ -44,7 +44,7 @@ def tryint(v):
         return v
 
 
-columnlinenames = columnlinenames = ['Line 1','Line 2','Line 3','Line 4', 'Line 5', 'Line 6', 'Line 7', 'Line 8', 'Line 9', 'Line 10', 'Line 11', 'Line 12', 'Line 13']
+columnlinenames = ['Line 1','Line 2','Line 3','Line 4', 'Line 5', 'Line 6', 'Line 7', 'Line 8', 'Line 9', 'Line 10', 'Line 11', 'Line 12', 'Line 13']
 
 Location1 = r'N:\ServicePlanning\Signage Update\StopIDv26Database_merging.xlsx'
 stops_df = pd.read_excel(Location1)
@@ -82,4 +82,11 @@ def generateentrylist(i):
     # This relies on the stops_df dataframe and the columnlinenames list
     return [x for (y,x) in sorted(zip(sortbyroutelist(stops_df, i, columnlinenames),generateentry(i,columnlinenames)), key=lambda x: x[0] if x[0] else np.inf)]
 
-print(generateentrylist(7))
+staging_dict = {}
+for a in range(7,len(stops_df)):
+    staging_dict[a] = [i for sublist in generateentrylist(a) for i in sublist]
+
+export_stopsdf = pd.DataFrame.from_dict(staging_dict, orient = 'index')
+
+#Location2 = ''
+#export_stopsdf.to_excel(Location2)
