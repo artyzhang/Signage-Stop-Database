@@ -49,8 +49,6 @@ columnlinenames = ['Line 1','Line 2','Line 3','Line 4', 'Line 5', 'Line 6', 'Lin
 Location1 = r'N:\ServicePlanning\Signage Update\StopIDv26Database_merging.xlsx'
 stops_df = pd.read_excel(Location1)
 
-stops_df['Line Order'] = np.nan
-
 def sortbyroutelist(df, i, columnlist):
     return [routeindex(tryint(x)) for x in [df.loc[i,j] for j in columnlist]]
 
@@ -83,10 +81,9 @@ def generateentrylist(i):
     return [x for (y,x) in sorted(zip(sortbyroutelist(stops_df, i, columnlinenames),generateentry(i,columnlinenames)), key=lambda x: x[0] if x[0] else np.inf)]
 
 staging_dict = {}
-for a in range(7,len(stops_df)):
+for a in range(7, len(stops_df)):
     staging_dict[a] = [i for sublist in generateentrylist(a) for i in sublist]
 
-export_stopsdf = pd.DataFrame.from_dict(staging_dict, orient = 'index')
-
-#Location2 = ''
-#export_stopsdf.to_excel(Location2)
+staging_stopsdf = pd.DataFrame.from_dict(staging_dict, orient = 'index')
+Location2 = r"N:\ServicePlanning\Signage Update\TestFolder\organized_staging.xlsx"
+staging_stopsdf.to_excel(Location2)
