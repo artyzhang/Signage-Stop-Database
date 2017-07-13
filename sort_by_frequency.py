@@ -2,14 +2,13 @@ import pandas as pd
 import numpy as np
 
 Metro = ['J', 'K', 'L', 'M', 'N', 'T']
-Historic = ['E', 'F', 59]
+Historic = ['E', 'F', 59, 60, 61]
 Rapid = ['5R', '9R', '14R', '28R', '38R']
 Frequentlocal = [1, 7, 8, 9, 14, 22, 28, 30, 38, 47, 49]
 Grid = [2, 3, 5, 6, 10, 12, 18, 19, 21, 23, 24, 27, 29, 31, 33, 43, 44, 45, 48, 54, 55]
 Connector = [11, 25, 35, 36, 37, 39, 52, 56, 57, 66, 67]
-Special = ['NX', 'L owl', 'N owl', '5 owl', '44 owl', '48 owl', '1AX',
-'1BX', '7X', '14X', '30X', '31AX', '31BX', '38AX', '38BX', 41, '76X', 60, 61, '81X','82X',
-'83X', 88, '8AX', '8BX', 90, 91]
+Special = ['NX', '1AX', '1BX', '7X', '8AX', '8BX', '14X', '30X', '31AX', '31BX', '38AX', '38BX', 41, '76X', '81X','82X',
+'83X', 88, 90, 91, 'L owl', 'N owl', '5 owl', '44 owl', '48 owl']
 
 routeorder = Metro + Historic + Rapid + Frequentlocal + Grid + Connector + Special
 
@@ -85,5 +84,11 @@ for a in range(7, len(stops_df)):
     staging_dict[a] = [i for sublist in generateentrylist(a) for i in sublist]
 
 staging_stopsdf = pd.DataFrame.from_dict(staging_dict, orient = 'index')
+
+#signtypeseries = #empty SEries
+#for a in range(7, len(stops_df)):
+    #if stops_df[a][0] in list, set signtypeseries[a] to list name
+#staging_stopsdf['Sign Type'] = signtypeseries
+
 Location2 = r"N:\ServicePlanning\Signage Update\TestFolder\organized_staging.xlsx"
 staging_stopsdf.to_excel(Location2)
