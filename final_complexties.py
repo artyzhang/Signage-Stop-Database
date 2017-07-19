@@ -16,12 +16,12 @@ def trystr(v):
          return True
      return False
 
-Location1 = r'N:\ServicePlanning\Signage Update\StopIDv26Database_merging.xlsx'
+Location1 = r"N:\ServicePlanning\Signage Update\Signage-Stop-Database-master\StopIDv26Database_sorted.xlsx"
 Location2 = r'N:\ServicePlanning\Signage Update\TestFolder\stop_categorization.xlsx'
 stops_df = pd.read_excel(Location1)
 reference_df = pd.read_excel(Location2)
 
-columnlinenames = ['Line 1','Line 2','Line 3','Line 4', 'Line 5', 'Line 6', 'Line 7', 'Line 8', 'Line 9', 'Line 10', 'Line 11', 'Line 12', 'Line 13']
+columnlinenames = ['Line 1','Line 2','Line 3','Line 4', 'Line 5', 'Line 6', 'Line 7', 'Line 8', 'Line 9', 'Line 10']
 
 # Create a nested dictionary object where the keys are a route number, paired to another dictionary
 # in which the stop ID's are keys that are paired to the appropriate code
@@ -36,23 +36,25 @@ for d in reference_list:
     reference_dict[d] = nested_ref
 
 troubleshooting = []
-for ind in range(7,len(stops_df)):
+for ind in range(len(stops_df)):
     for name in columnlinenames:
-        if tryint(stops_df.loc[ind,name]) in reference_list:
-            lookup = tryint(stops_df.loc[ind,name])
-            if stops_df.loc[ind,"Stop ID"] in reference_dict[lookup].keys():
-                if reference_dict[lookup][stops_df.loc[ind,"Stop ID"]] != '<Null>':
-                    stops_df.loc[ind, columnplus2(stops_df, name)] = reference_dict[lookup][stops_df.loc[ind,"Stop ID"]]
-                    #print('Match for '  + str(lookup) + ' and ' + str(stops_df.loc[ind,"Stop ID"]))
+        if pd.isnull(stops_df.loc[ind, columnplus2(stops_df, name)]):
+            if tryint(stops_df.loc[ind,name]) in reference_list:
+                lookup = tryint(stops_df.loc[ind,name])
+                if stops_df.loc[ind,"Stop ID"] in reference_dict[lookup].keys():
+                    if reference_dict[lookup][stops_df.loc[ind,"Stop ID"]] != '<Null>':
+                        stops_df.loc[ind, columnplus2(stops_df, name)] = reference_dict[lookup][stops_df.loc[ind,"Stop ID"]]
+                        #print('Match for '  + str(lookup) + ' and ' + str(stops_df.loc[ind,"Stop ID"]))
+                    else:
+                        troubleshooting.append(['Null',stops_df.loc[ind,name],stops_df.loc[ind,"Stop ID"]])
                 else:
-                    stops_df.loc[ind, columnplus2(stops_df, name)] = 'NULL'
-                    troubleshooting.append(['Null',stops_df.loc[ind,name],stops_df.loc[ind,"Stop ID"]])
-            else:
-                stops_df.loc[ind, columnplus2(stops_df, name)] = 'No Match'
-                troubleshooting.append(['No match',stops_df.loc[ind,name],stops_df.loc[ind,"Stop ID"]])
+                    troubleshooting.append(['No match',stops_df.loc[ind,name],stops_df.loc[ind,"Stop ID"]])
 
-print(troubleshooting)
+troubleshoot_df = pd.DataFrame.from_records(troubleshooting, columns = ['Type of error','Line','Stop ID'])
+troubleshoot_df.to_excel(r"N:\ServicePlanning\Signage Update\TestFolder\conflicts.xlsx")
+
 Location3 = r"N:\ServicePlanning\Signage Update\TestFolder\test_final_ties.xlsx"
+
 stops_df.loc[:,['Stop ID','Line 1','Line 1 Route',
                        'Line 2','Line 2 Route',
                        'Line 3','Line 3 Route',
@@ -62,7 +64,4 @@ stops_df.loc[:,['Stop ID','Line 1','Line 1 Route',
                        'Line 7','Line 7 Route',
                        'Line 8','Line 8 Route',
                        'Line 9','Line 9 Route',
-                       'Line 10','Line 10 Route',
-                       'Line 11','Line 11 Route',
-                       'Line 12','Line 12 Route'
-                       'Line 13','Line 13 Route']].to_excel(Location3)
+                       'Line 10','Line 10 Route',]].to_excel(Location3)

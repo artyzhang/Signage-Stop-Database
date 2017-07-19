@@ -45,12 +45,11 @@ def tryint(v):
 
 columnlinenames = ['Line 1','Line 2','Line 3','Line 4', 'Line 5', 'Line 6', 'Line 7', 'Line 8', 'Line 9', 'Line 10', 'Line 11', 'Line 12', 'Line 13']
 
-Location1 = r'N:\ServicePlanning\Signage Update\StopIDv26Database_merging.xlsx'
+Location1 = r'N:\ServicePlanning\Signage Update\Signage-Stop-Database-master\StopIDv26Database_merging.xlsx'
 stops_df = pd.read_excel(Location1)
 
 def sortbyroutelist(df, i, columnlist):
     return [routeindex(tryint(x)) for x in [df.loc[i,j] for j in columnlist]]
-
 
 def stopdfplus(ind, dfc, num):
     # This relies on the stops_df dataframe
@@ -80,15 +79,15 @@ def generateentrylist(i):
     return [x for (y,x) in sorted(zip(sortbyroutelist(stops_df, i, columnlinenames),generateentry(i,columnlinenames)), key=lambda x: x[0] if x[0] else np.inf)]
 
 staging_dict = {}
-for a in range(7, len(stops_df)):
+for a in range(len(stops_df)):
     staging_dict[a] = [i for sublist in generateentrylist(a) for i in sublist]
 
 staging_stopsdf = pd.DataFrame.from_dict(staging_dict, orient = 'index')
 
-#signtypeseries = #empty SEries
-#for a in range(7, len(stops_df)):
-    #if stops_df[a][0] in list, set signtypeseries[a] to list name
-#staging_stopsdf['Sign Type'] = signtypeseries
+Location3 = r"N:\ServicePlanning\Signage Update\TestFolder\organizedbyfrequency.xlsx"
+staging_stopsdf.to_excel(Location3)
 
-Location2 = r"N:\ServicePlanning\Signage Update\TestFolder\organized_staging.xlsx"
-staging_stopsdf.to_excel(Location2)
+finalstopsdf = pd.concat([stops_df.iloc[:,list(range(24))],staging_stopsdf],axis = 1)
+
+#Location2 = r"N:\ServicePlanning\Signage Update\TestFolder\staging_organized_by_frequency.xlsx"
+#finalstopsdf.to_excel(Location2)
