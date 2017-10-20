@@ -45,23 +45,12 @@ for ind in range(len(stops_df)):
                     if reference_dict[lookup][stops_df.loc[ind,"Stop ID"]] != '<Null>':
                         stops_df.loc[ind, columnplus2(stops_df, name)] = reference_dict[lookup][stops_df.loc[ind,"Stop ID"]]
                         #print('Match for '  + str(lookup) + ' and ' + str(stops_df.loc[ind,"Stop ID"]))
-                    else:
-                        troubleshooting.append(['Null',stops_df.loc[ind,name],stops_df.loc[ind,"Stop ID"]])
                 else:
-                    troubleshooting.append(['No match',stops_df.loc[ind,name],stops_df.loc[ind,"Stop ID"]])
+                    troubleshooting.append([ind,'No match',stops_df.loc[ind,name],stops_df.loc[ind,"Stop ID"]])
 
-troubleshoot_df = pd.DataFrame.from_records(troubleshooting, columns = ['Type of error','Line','Stop ID'])
+troubleshoot_df = pd.DataFrame.from_records(troubleshooting, columns = ['Line ID','Type of error','Line','Stop ID'])
 troubleshoot_df.to_excel(r"N:\ServicePlanning\Signage Update\TestFolder\conflicts.xlsx")
 
 Location3 = r"N:\ServicePlanning\Signage Update\TestFolder\test_final_ties.xlsx"
 
-stops_df.loc[:,['Stop ID','Line 1','Line 1 Route',
-                       'Line 2','Line 2 Route',
-                       'Line 3','Line 3 Route',
-                       'Line 4','Line 4 Route',
-                       'Line 5','Line 5 Route',
-                       'Line 6','Line 6 Route',
-                       'Line 7','Line 7 Route',
-                       'Line 8','Line 8 Route',
-                       'Line 9','Line 9 Route',
-                       'Line 10','Line 10 Route',]].to_excel(Location3)
+stops_df.to_excel(Location3)
